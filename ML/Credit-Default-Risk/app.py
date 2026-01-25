@@ -1,58 +1,68 @@
-import joblib
-import gdown
-import os
-
-MODEL_PATH = "credit_default_rf_balanced.joblib"
-
-# ✅ Use the real Google Drive file ID from your link
-FILE_ID = "1NDQ9PRvCbXXL-n99xhcyD5i3_z5auSJY"
-URL = f"https://drive.google.com/uc?id={FILE_ID}"
-
-# Download model if not already present
-if not os.path.exists(MODEL_PATH):
-    gdown.download(URL, MODEL_PATH, quiet=False)
-
-# Load model
-model = joblib.load(MODEL_PATH)
-
-
-# app.py
 import streamlit as st
 import pandas as pd
 import joblib
+import gdown
+from pathlib import Path
 
 # -----------------------------
-# CONFIGURATION
+# PAGE CONFIG
 # -----------------------------
 st.set_page_config(
     page_title="Credit Default Risk Prediction",
     layout="centered"
 )
 
-THRESHOLD = 0.30
-MODEL_PATH = "credit_default_rf_balanced.joblib"
-FEATURES_PATH = "features.joblib"
+# -----------------------------
+# PATH SETUP
+# -----------------------------
+BASE_DIR = Path(__file__).resolve().parent
+
+MODEL_PATH = BASE_DIR / "credit_default_rf_balanced.joblib"
+FEATURES_PATH = BASE_DIR / "features.joblib"
+
+# -----------------------------
+# GOOGLE DRIVE CONFIG (MODEL)
+# -----------------------------
+FILE_ID = "1NDQ9PRvCbXXL-n99xhcyD5i3_z5auSJY"  # your drive file id
+URL = f"https://drive.google.com/uc?id={FILE_ID}"
+
+# -----------------------------
+# DOWNLOAD MODEL IF NOT PRESENT
+# -----------------------------
+if not MODEL_PATH.exists():
+    with st.spinner("Downloading ML model (one-time)... Please wait..."):
+        gdown.download(URL, str(MODEL_PATH), quiet=False)
 
 # -----------------------------
 # LOAD MODEL & FEATURES
 # -----------------------------
-model = joblib.load(MODEL_PATH)
-feature_names = joblib.load(FEATURES_PATH)  # list of features used in training
+try:
+    model = joblib.load(MODEL_PATH)
+except Exception as e:
+    st.error("❌ Failed to load model file.")
+    st.stop()
+
+try:
+    feature_names = joblib.load(FEATURES_PATH)
+except Exception as e:
+    st.error("❌ features.joblib not found. Make sure it is committed to GitHub.")
+    st.stop()
 
 # -----------------------------
 # TITLE
 # -----------------------------
-st.title("Credit Card Default Risk Prediction")
+st.title("💳 Credit Card Default Risk Prediction")
+
 st.write(
     "This application predicts the **risk of credit card default** based on "
     "customer credit history and payment behavior."
 )
 
 # -----------------------------
-# MAPPINGS (single Unknown)
+# MAPPINGS
 # -----------------------------
 education_map = {
-    0: "Unknown",          # includes 0, 5, 6
+    0: "Unknown",
     1: "Graduate School",
     2: "University",
     3: "High School",
@@ -151,12 +161,12 @@ input_df = pd.DataFrame({
     "SE_MA": [SEX]
 })
 
-# Align input_df with training features
+# Align with training features
 input_df = input_df[feature_names]
 
-# Show readable labels in preview
+# Preview
 preview_df = input_df.copy()
-preview_df["EDUCATION"] = preview_df["EDUCATION"].replace({5:0, 6:0}).map(education_map)
+preview_df["EDUCATION"] = preview_df["EDUCATION"].replace({5: 0, 6: 0}).map(education_map)
 preview_df["MARRIAGE"] = preview_df["MARRIAGE"].map(marriage_map)
 preview_df["SE_MA"] = preview_df["SE_MA"].map({1: "Male", 2: "Female"})
 
@@ -164,7 +174,7 @@ st.write("### Input Data (Preview)")
 st.dataframe(preview_df)
 
 # -----------------------------
-# PREDICTION & RISK LOGIC
+# PREDICTION
 # -----------------------------
 if st.button("Predict Default Risk"):
 
@@ -173,11 +183,11 @@ if st.button("Predict Default Risk"):
     st.subheader("Prediction Result")
 
     if proba < 0.30:
-        st.success(f"Low Risk of Default (Probability: {proba:.2%})")
+        st.success(f"✅ Low Risk of Default (Probability: {proba:.2%})")
     elif proba < 0.50:
-        st.warning(f"Medium Risk of Default (Probability: {proba:.2%})")
+        st.warning(f"⚠️ Medium Risk of Default (Probability: {proba:.2%})")
     else:
-        st.error(f"High Risk of Default (Probability: {proba:.2%})")
+        st.error(f"🚨 High Risk of Default (Probability: {proba:.2%})")
 
     st.markdown(
         """
