@@ -1,0 +1,9 @@
+mlruns/
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+*.db
+*.log
+*.csv
+*.xlsx
+*.joblib
