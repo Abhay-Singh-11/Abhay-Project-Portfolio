@@ -26,7 +26,12 @@ A Streamlit-based web app that predicts credit card default risk using a trained
 - “This project uses MLflow for experiment tracking. Run mlflow ui locally to view experiments.”
 
 ---
+## Model Files
 
+Due to GitHub’s 100 MB file size limit, large trained models are excluded from this repository.
+
+🔗 Download the Random Forest model used in the Credit Default Risk project:  
+[Download credit_default_rf_balanced.joblib](https://drive.google.com/file/d/1NDQ9PRvCbXXL-n99xhcyD5i3_z5auSJY/view?usp=sharing))
 
 ## 🚀 Deployment
 All ML apps are cloud-hosted and publicly accessible.  
