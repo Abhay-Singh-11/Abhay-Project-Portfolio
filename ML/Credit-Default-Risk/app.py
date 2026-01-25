@@ -1,3 +1,21 @@
+import joblib
+import gdown
+import os
+
+MODEL_PATH = "credit_default_rf_balanced.joblib"
+
+# ✅ Use the real Google Drive file ID from your link
+FILE_ID = "1NDQ9PRvCbXXL-n99xhcyD5i3_z5auSJY"
+URL = f"https://drive.google.com/uc?id={FILE_ID}"
+
+# Download model if not already present
+if not os.path.exists(MODEL_PATH):
+    gdown.download(URL, MODEL_PATH, quiet=False)
+
+# Load model
+model = joblib.load(MODEL_PATH)
+
+
 # app.py
 import streamlit as st
 import pandas as pd
