@@ -31,21 +31,43 @@ URL = f"https://drive.google.com/uc?id={FILE_ID}"
 # -----------------------------
 if not MODEL_PATH.exists():
     with st.spinner("Downloading ML model (one-time)... Please wait..."):
-        gdown.download(URL, str(MODEL_PATH), quiet=False)
+        try:
+            gdown.download(URL, str(MODEL_PATH), quiet=False, fuzzy=True)
+        except Exception as e:
+            st.error("❌ Failed to download model from Google Drive.")
+            st.error(str(e))
+            st.stop()
 
 # -----------------------------
-# LOAD MODEL & FEATURES
+# VERIFY MODEL EXISTS
+# -----------------------------
+if not MODEL_PATH.exists():
+    st.error("❌ Model file not found even after download.")
+    st.error("Check Google Drive sharing: it must be 'Anyone with link → Viewer'.")
+    st.stop()
+
+# -----------------------------
+# LOAD MODEL
 # -----------------------------
 try:
     model = joblib.load(MODEL_PATH)
 except Exception as e:
     st.error("❌ Failed to load model file.")
+    st.error(str(e))
+    st.stop()
+
+# -----------------------------
+# LOAD FEATURES
+# -----------------------------
+if not FEATURES_PATH.exists():
+    st.error("❌ features.joblib not found in repository.")
     st.stop()
 
 try:
     feature_names = joblib.load(FEATURES_PATH)
 except Exception as e:
-    st.error("❌ features.joblib not found. Make sure it is committed to GitHub.")
+    st.error("❌ Failed to load features.joblib.")
+    st.error(str(e))
     st.stop()
 
 # -----------------------------
