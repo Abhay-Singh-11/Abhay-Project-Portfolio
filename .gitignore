@@ -6,4 +6,3 @@ __pycache__/
 *.log
 *.csv
 *.xlsx
-*.joblib
