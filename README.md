@@ -1,2 +1,2 @@
 # Abhay-Project-Portfolio
-project portfolio showcasing Machine Learning and Big Data solutions with end-to-end implementation.
+project portfolio showcasing Machine Learning solutions with end-to-end implementation.
