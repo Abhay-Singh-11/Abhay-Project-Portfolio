@@ -1,4 +1,4 @@
-a# 🏦 Credit Card Default Risk Prediction
+# 🏦 Credit Card Default Risk Prediction
 
 This project predicts whether a customer will default in the next month using six months of historical repayment behavior.
 
